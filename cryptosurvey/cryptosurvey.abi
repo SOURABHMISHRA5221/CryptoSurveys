@@ -4,21 +4,7 @@
     "types": [],
     "structs": [
         {
-            "name": "credscrore",
-            "base": "",
-            "fields": [
-                {
-                    "name": "user",
-                    "type": "name"
-                },
-                {
-                    "name": "score",
-                    "type": "int32"
-                }
-            ]
-        },
-        {
-            "name": "deleteuser",
+            "name": "clearuser",
             "base": "",
             "fields": [
                 {
@@ -38,14 +24,50 @@
                 {
                     "name": "score",
                     "type": "int32"
+                },
+                {
+                    "name": "stake",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "surveydata",
+            "base": "",
+            "fields": [
+                {
+                    "name": "company",
+                    "type": "name"
+                },
+                {
+                    "name": "balance",
+                    "type": "int64"
+                }
+            ]
+        },
+        {
+            "name": "userdetail",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "balance",
+                    "type": "int64"
+                },
+                {
+                    "name": "score",
+                    "type": "int64"
                 }
             ]
         }
     ],
     "actions": [
         {
-            "name": "deleteuser",
-            "type": "deleteuser",
+            "name": "clearuser",
+            "type": "clearuser",
             "ricardian_contract": ""
         },
         {
@@ -56,8 +78,15 @@
     ],
     "tables": [
         {
-            "name": "credscore",
-            "type": "credscrore",
+            "name": "surveydata",
+            "type": "surveydata",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "userdetail",
+            "type": "userdetail",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

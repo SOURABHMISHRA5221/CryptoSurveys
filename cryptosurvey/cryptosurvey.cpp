@@ -17,62 +17,89 @@ CONTRACT cryptosurvey : public contract{
            myToken("ORE",4)
            {}
 
-        using contract::contract;
+        TABLE surveydata{
+            name company;
+            int64_t balance;
+            auto primary_key() const {return company.value;}
+        };
 
-        TABLE credscrore{
+        typedef multi_index<name("surveydata"),surveydata> surveydatas;
+
+        TABLE userdetail{
            name user;
-           int score;
+           int64_t balance;
+           int64_t score;
            auto primary_key() const {return user.value;}
         };
 
-        typedef multi_index<name("credscore"),credscrore> credscrores;
+        typedef multi_index<name("userdetail"),userdetail> userdetails;
+         
+        using contract::contract;
 
-        ACTION insertscore(name user,int score){
+        ACTION insertscore(name user,int score,asset stake,name company){
            require_auth(name("cryptosurvey"));
-           addScore(user,score);
+           check(stake.symbol == myToken,"Not our token");
+           addScore(user,score,stake.amount);
         }
 
-        ACTION deleteuser(name user){
+        ACTION clearuser(name user){
            require_auth(name("cryptosurvey"));
            delUser(user);
         }
 
-       
+        ON_TRANSFER
+        void addsurveydata(name storer,name reciver,asset stake,string data){
+          check(data==string("SURVEY"),"SURVEY");
 
-
-        
+        }
+                
    private:
       const symbol myToken;
-      
-      
-      void addScore(name user,int score){
-         credscrores _credscore(get_self(),get_self().value);
-         auto itr = _credscore.find(user.value);
-         if ( itr == _credscore.end()){
-            addNewUser(user,score);
+
+      void addScore(name user,int64_t score,int64_t balance){
+         userdetails _userdetails(get_self(),get_self().value);
+         auto itr = _userdetails.find(user.value);
+         if ( itr == _userdetails.end()){
+            addNewUser(user,score,balance);
          }
          else{
-            _credscore.modify(itr,get_self(),[&](auto& olduser){
-                      olduser.score += score;
+            _userdetails.modify(itr,get_self(),[&](auto& olduser){
+                      olduser.score   += score;
+                      olduser.balance += balance;
             });
          }
       }
 
-      void addNewUser(name user,int value){
-         credscrores _credscore(get_self(),get_self().value);
-         _credscore.emplace(get_self(),[&](auto& newUser){
+      void addNewUser(name user,int64_t value,int64_t balance){
+         userdetails _userdetails(get_self(),get_self().value);
+         _userdetails.emplace(get_self(),[&](auto& newUser){
               newUser.user = user;
               newUser.score = value;
+              newUser.balance = balance;
          });
       }
 
       void delUser(name user){
-         credscrores _credscore(get_self(),get_self().value);
-         auto itr = _credscore.find(user.value);
-         check(itr != _credscore.end(),"USER DOES'T EXIST");
-         _credscore.erase(itr);
+         userdetails _userdetails(get_self(),get_self().value);
+         auto itr = _userdetails.find(user.value);
+         check(itr != _userdetails.end(),"USER DOES'NT EXIST");
+         _userdetails.erase(itr);
       }
 
-      
+      void addsurvey(name s,name t,int64_t bal){
+         surveydatas _surveydatas(get_self(),get_self().value);
+         auto itr = _surveydatas.find(s.value);
+         if ( itr == _surveydatas.end()){
+           _surveydatas.emplace(get_self(),[&](auto& nw){
+                nw.company = s;
+                nw.balance = bal;
+           });
+         }
+         else{
+           _surveydatas.find(itr,get_self(),[&](auto& old){
+               old.balance += bal;
+           });
+         }
+      }
 
 };
