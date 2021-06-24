@@ -28,6 +28,20 @@
                 {
                     "name": "stake",
                     "type": "asset"
+                },
+                {
+                    "name": "company",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "rmcompany",
+            "base": "",
+            "fields": [
+                {
+                    "name": "company",
+                    "type": "name"
                 }
             ]
         },
@@ -74,11 +88,16 @@
             "name": "insertscore",
             "type": "insertscore",
             "ricardian_contract": ""
+        },
+        {
+            "name": "rmcompany",
+            "type": "rmcompany",
+            "ricardian_contract": ""
         }
     ],
     "tables": [
         {
-            "name": "surveydata",
+            "name": "surveytable",
             "type": "surveydata",
             "index_type": "i64",
             "key_names": [],

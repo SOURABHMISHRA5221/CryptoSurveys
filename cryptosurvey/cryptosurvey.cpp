@@ -14,7 +14,7 @@ CONTRACT cryptosurvey : public contract{
            name code,
            datastream<const char *> ds
          ):contract(reciver,code,ds),
-           myToken("ORE",4)
+           myToken("TOK",4)
            {}
 
         TABLE surveydata{
@@ -23,7 +23,7 @@ CONTRACT cryptosurvey : public contract{
             auto primary_key() const {return company.value;}
         };
 
-        typedef multi_index<name("surveydata"),surveydata> surveydatas;
+        typedef multi_index<name("surveytable"),surveydata> surveydatas;
 
         TABLE userdetail{
            name user;
@@ -39,7 +39,7 @@ CONTRACT cryptosurvey : public contract{
         ACTION insertscore(name user,int score,asset stake,name company){
            require_auth(name("cryptosurvey"));
            check(stake.symbol == myToken,"Not our token");
-           addScore(user,score,stake.amount);
+           addScore(user,score,stake.amount,company);
         }
 
         ACTION clearuser(name user){
@@ -49,14 +49,20 @@ CONTRACT cryptosurvey : public contract{
 
         ON_TRANSFER
         void addsurveydata(name storer,name reciver,asset stake,string data){
-          check(data==string("SURVEY"),"SURVEY");
+          check(data==string("SURVEY"),"String should be SURVEY");
+          addsurvey(reciver,stake.amount);
+        }
 
+        ACTION rmcompany(name company){
+          require_auth(company);
+          delCompany(company);
         }
                 
    private:
       const symbol myToken;
 
-      void addScore(name user,int64_t score,int64_t balance){
+      void addScore(name user,int64_t score,int64_t balance,name company){
+         decreaseCompanyBalance(balance,company);
          userdetails _userdetails(get_self(),get_self().value);
          auto itr = _userdetails.find(user.value);
          if ( itr == _userdetails.end()){
@@ -86,7 +92,7 @@ CONTRACT cryptosurvey : public contract{
          _userdetails.erase(itr);
       }
 
-      void addsurvey(name s,name t,int64_t bal){
+      void addsurvey(name s,int64_t bal){
          surveydatas _surveydatas(get_self(),get_self().value);
          auto itr = _surveydatas.find(s.value);
          if ( itr == _surveydatas.end()){
@@ -96,10 +102,34 @@ CONTRACT cryptosurvey : public contract{
            });
          }
          else{
-           _surveydatas.find(itr,get_self(),[&](auto& old){
+           _surveydatas.modify(itr,get_self(),[&](auto& old){
                old.balance += bal;
            });
          }
+      }
+
+      void decreaseCompanyBalance(int64_t bal,name comp){
+         surveydatas _surveydatas(get_self(),get_self().value);
+         auto itr = _surveydatas.find(comp.value);
+         _surveydatas.modify(itr,get_self(),[&](auto& data){
+              data.balance -= bal;
+         });
+      }
+
+      void delCompany(name company){
+         surveydatas _surveydatas(get_self(),get_self().value);
+         auto itr =  _surveydatas.find(company.value);
+         double balance  = itr->balance*0.998;
+         asset payoutasset(balance,myToken);
+         action payoutaction = action(
+            permission_level{get_self(),name("active")},
+            name("eosio.token"),
+            name("transfer"),
+            make_tuple(get_self(),company,payoutasset,string("THANKS FOR INVESTING"))
+         );
+         payoutaction.send();
+         _surveydatas.erase(itr);
+
       }
 
 };
