@@ -1,11 +1,23 @@
 #include <eosio/eosio.hpp>
+#include <eosio/asset.hpp>
 
 using namespace eosio;
 using namespace std;
 
+#define ON_TRANSFER
+
 CONTRACT cryptosurvey : public contract{
 	public:
         
+        cryptosurvey(
+           name reciver,
+           name code,
+           datastream<const char *> ds
+         ):contract(reciver,code,ds),
+           myToken("ORE",4){}
+
+        using contract::contract;
+
         TABLE users{
            name user;
            auto primary_key() const {return user.value;}
@@ -13,23 +25,7 @@ CONTRACT cryptosurvey : public contract{
        
         typedef multi_index<name("users"),users> userTable;
         
-        using contract::contract;
-        ACTION adduser( name user){
-           require_auth(user);
-           userTable _userTable(get_self(),get_self().value);
-           auto itr = _userTable.find(user.value);
-           
-           if ( itr != _userTable.end()){
-             _userTable.emplace(user,[&](auto& newRecord){
-                newRecord.user =user;
-             });
-           }
-           else{
-             _userTable.modify(itr,user,[&]( auto& record){
-                 record.user = user;
-             });
-           }
-           
-        }
+   private:
+      const symbol myToken;
 
 };
