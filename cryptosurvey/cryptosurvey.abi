@@ -4,7 +4,21 @@
     "types": [],
     "structs": [
         {
-            "name": "adduser",
+            "name": "credscrore",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "score",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "deleteuser",
             "base": "",
             "fields": [
                 {
@@ -14,27 +28,36 @@
             ]
         },
         {
-            "name": "users",
+            "name": "insertscore",
             "base": "",
             "fields": [
                 {
                     "name": "user",
                     "type": "name"
+                },
+                {
+                    "name": "score",
+                    "type": "int32"
                 }
             ]
         }
     ],
     "actions": [
         {
-            "name": "adduser",
-            "type": "adduser",
+            "name": "deleteuser",
+            "type": "deleteuser",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "insertscore",
+            "type": "insertscore",
             "ricardian_contract": ""
         }
     ],
     "tables": [
         {
-            "name": "users",
-            "type": "users",
+            "name": "credscore",
+            "type": "credscrore",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
