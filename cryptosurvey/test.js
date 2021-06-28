@@ -1,0 +1,40 @@
+const {Api, JsonRpc, RpcError } = require('eosjs');
+const {JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
+const fetch = require('node-fetch');
+const { TextEncoder, TextDecoder } = require('util');
+
+const defaultPrivateKey = "5KM2DtmsLdp5VcMTxyUakVGBhRo9Yqi3Tzk2sQwwxsCLNQerxun";
+const signatureProvider = new JsSignatureProvider([defaultPrivateKey]);
+
+const rpc = new JsonRpc('http://127.0.0.1:8888',{fetch});
+const api = new Api({rpc,signatureProvider,textDecoder:new TextDecoder(),textEncoder:new TextEncoder()});
+
+try{
+(async () => {
+  const result = await api.transact({
+  	actions:[{
+  	  account: 'eosio.token',
+  	  name: 'transfer',
+  	  authorization:[{
+  	  	actor:'cryptosurvey',
+  	  	permission:'active',
+  	  }],
+  	   data:{
+        from: 'cryptosurvey',
+        to: 'shivansh',
+        quantity:'1.0000 TOK',
+        memo: 'SURVEY',
+  	   },
+  	}]},{
+  		blocksBehind: 3,
+  		expireSeconds: 30,
+
+  });
+  console.dir(result);
+})();
+}catch(e){
+	console.log('Caught: \n'+e);
+	if ( e instanceof RpcError){
+		console.log(JSON.stringify(e.json,null,2));
+	}
+}
