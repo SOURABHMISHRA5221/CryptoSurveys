@@ -9,32 +9,44 @@ const signatureProvider = new JsSignatureProvider([defaultPrivateKey]);
 const rpc = new JsonRpc('http://127.0.0.1:8888',{fetch});
 const api = new Api({rpc,signatureProvider,textDecoder:new TextDecoder(),textEncoder:new TextEncoder()});
 
-try{
-(async () => {
-  const result = await api.transact({
-  	actions:[{
-  	  account: 'eosio.token',
-  	  name: 'transfer',
-  	  authorization:[{
-  	  	actor:'cryptosurvey',
-  	  	permission:'active',
-  	  }],
-  	   data:{
-        from: 'cryptosurvey',
-        to: 'shivansh',
-        quantity:'1.0000 TOK',
-        memo: 'SURVEY',
-  	   },
-  	}]},{
+const prompt = require('prompt');
+prompt.start();
+
+function insertscore(){
+	prompt.get(['participant','score','stake','company'], (err,result)=>{
+	if (err){return onErr(err);}
+    try{
+         (async () => {
+  			const resu = await api.transact({
+   				actions:[{
+  	  				account: 'cryptosurvey',
+  	  				name: 'insertscore',
+  	  				authorization:[{
+  	  					actor:'cryptosurvey',
+  	  					permission:'active',
+  	  			}],
+  	   			data:{
+        			user: result.participant,
+        			score:Number(result.score),
+        			stake:result.stake,
+        			company: result.company,
+  	   			},
+  			}]},{
   		blocksBehind: 3,
   		expireSeconds: 30,
-
-  });
-  console.dir(result);
-})();
-}catch(e){
-	console.log('Caught: \n'+e);
-	if ( e instanceof RpcError){
-		console.log(JSON.stringify(e.json,null,2));
+		});
+  		console.dir(resu);
+		})();
+	}catch(e){
+		console.log('Caught: \n'+e);
+		if ( e instanceof RpcError){
+			console.log(JSON.stringify(e.json,null,2));
+		}
 	}
+	
+});
+	
+	
 }
+
+insertscore();
