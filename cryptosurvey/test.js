@@ -49,4 +49,84 @@ function insertscore(){
 	
 }
 
-insertscore();
+
+function gettable(){
+	prompt.get(['code','scope','table'],(err,result) => {
+	try{
+		(async () =>{
+       	const resu = await rpc.get_table_rows({
+       		json:true,
+       		code: result.code,
+       		scope: result.scope,
+       		table: result.table,
+       		limit: 10
+
+       	});
+     
+       	
+       	console.log(resu['rows']);
+	})();
+	}
+	catch(e){
+		console.log('Caught: \n'+e);
+		if ( e instanceof RpcError){
+			console.log(JSON.stringify(e.json,null,2));
+		}
+	}
+	});
+}
+
+function getaccount(){
+	prompt.get(['name'],(err,result)=>{
+		try{
+			( async () =>{
+				const resu = await rpc.get_account(
+					result.name
+				);
+                    console.log(resu);
+			})();			
+		}catch(e){
+			if (e instanceof RpcError){
+				console.log(JSON.stringify(e.json,null,2));
+			}
+		}
+
+	});
+}
+
+
+function insertSurveyCompany(){
+	prompt.get(['to','stake'],(err,result)=>{
+		try{
+              ( async ()=>{
+              	  const resu = await api.transact({
+              	  	actions:[{
+  	  				account: 'eosio.token',
+  	  				name: 'transfer',
+  	  				authorization:[{
+  	  					actor:'cryptosurvey',
+  	  					permission:'active',
+  	  			}],
+  	   			data:{
+        			from: 'cryptosurvey',
+        			to:result.to,
+        			quantity:result.stake,
+        			memo: 'SURVEY'
+  	   			},
+  			}]},{
+  		     blocksBehind: 3,
+  		     expireSeconds: 30,
+		
+              	  });
+              	  console.log(resu);
+              })();
+		}
+		catch(e){
+             if ( e instanceof RpcError){
+             	 console.log(JSON.stringify(e.json,null,2));
+             }
+		}
+	});
+}
+
+insertSurveyCompany();
