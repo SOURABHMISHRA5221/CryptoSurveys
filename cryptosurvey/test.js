@@ -129,4 +129,54 @@ function insertSurveyCompany(){
 	});
 }
 
-insertSurveyCompany();
+
+function createAccount(){
+	prompt.get( ['name'],(err,result)=>{
+		try{
+             (async () => {
+             		const resu  = await api.transact({
+             			actions: [{
+      					account: 'eosio',
+      					name: 'newaccount',
+      					authorization: [{
+        					actor: 'cryptosurvey',
+        					permission: 'active',
+      				}],
+      				data:{
+        			      	creator: 'cryptosurvey',
+       				 	name: result.name,
+        					owner: {
+          					threshold: 1,
+          					keys: [{
+           						 key: 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV',
+           						 weight: 1
+          						}],
+          					accounts: [],
+          					waits: []
+       					 },
+        					active: {
+          					threshold: 1,
+          					keys: [{
+            						key: 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV',
+           					 	weight: 1
+         					 	}],
+          					accounts: [],
+          					waits: []
+        					},
+  	   					},
+  					}]},{
+  		   				  blocksBehind: 3,
+  		     			  expireSeconds: 30,
+		 });
+              	console.log(resu);
+          })();
+		}catch(e){
+			if ( e instanceof RpcError){
+                  console.log(JSON.stringify(e.json,null,2));
+			}
+		}
+
+	});
+}
+
+createAccount();
