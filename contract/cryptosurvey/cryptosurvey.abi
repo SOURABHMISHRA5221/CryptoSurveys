@@ -126,21 +126,21 @@
     ],
     "tables": [
         {
-            "name": "refund",
+            "name": "refundtbl",
             "type": "refunddetail",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "survey",
+            "name": "surveytbl",
             "type": "surveydata",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "user",
+            "name": "usertbl",
             "type": "userdetail",
             "index_type": "i64",
             "key_names": [],

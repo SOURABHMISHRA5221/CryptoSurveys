@@ -13,7 +13,7 @@ CONTRACT cryptosurvey : public contract{
            name code,
            datastream<const char *> ds
          ):contract(reciver,code,ds),
-           myToken("SUR",4)
+           myToken("SOM",4)
            {}
 
         TABLE surveydata{
@@ -22,7 +22,7 @@ CONTRACT cryptosurvey : public contract{
             auto primary_key() const {return company.value;}
         };
 
-        typedef multi_index<name("survey"),surveydata> surveydatas;
+        typedef multi_index<name("surveytbl"),surveydata> surveydatas;
 
         TABLE userdetail{
            name user;
@@ -31,7 +31,7 @@ CONTRACT cryptosurvey : public contract{
            auto primary_key() const {return user.value;}
         };
 
-        typedef multi_index<name("user"),userdetail> userdetails;
+        typedef multi_index<name("usertbl"),userdetail> userdetails;
 
         TABLE refunddetail{
            name user;
@@ -39,13 +39,13 @@ CONTRACT cryptosurvey : public contract{
            auto primary_key() const {return user.value;}
         };
 
-        typedef multi_index<name("refund"),refunddetail> refunddetails;
+        typedef multi_index<name("refundtbl"),refunddetail> refunddetails;
          
         using contract::contract;
 
         ON_TRANSFER
         void transferaction(name storer,name reciver,asset stake,string data){
-          check( (data ==string("COMPANY") || data == string("USER") || data == string("REFUND")),"Enter correct information in memo");
+          check( (data ==string("COMPANY") || data == string("USER") || data == string("REFUND") || data == string("REMOVED")),"Enter correct information in memo");
           check(stake.symbol == myToken,"Not our token");
           if ( data == string("COMPANY")) {
                addsurvey(reciver,stake.amount);
@@ -53,8 +53,11 @@ CONTRACT cryptosurvey : public contract{
           else if ( data == string("USER")){
                addScore(reciver,0,stake.amount,name("cryptosurvey"));
           }
-          else{
+          else if ( data  == string("REFUND")){
               addToRefundTable(storer,stake.amount);
+          }
+          else{
+              print("THANKS FOR INVESTING");
           }
         }
 
@@ -116,7 +119,7 @@ CONTRACT cryptosurvey : public contract{
             permission_level{get_self(),name("active")},
             name("eosio.token"),
             name("transfer"),
-            make_tuple(get_self(),user,payoutasset,string("THANKS FOR INVESTING"))
+            make_tuple(get_self(),user,payoutasset,string("REMOVED"))
          );
          payoutaction.send();
          _userdetails.erase(itr);
@@ -155,7 +158,7 @@ CONTRACT cryptosurvey : public contract{
             permission_level{get_self(),name("active")},
             name("eosio.token"),
             name("transfer"),
-            make_tuple(get_self(),company,payoutasset,string("THANKS FOR INVESTING"))
+            make_tuple(get_self(),company,payoutasset,string("REMOVED"))
          );
          payoutaction.send();
          _surveydatas.erase(itr);

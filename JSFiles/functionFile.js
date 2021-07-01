@@ -196,7 +196,7 @@ function transfer(){
   	   			data:{
         			from: "cryptosurvey",
         			to:result.to,
-        			stake:result.stake,
+        			quantity:result.stake,
         			memo: result.memo,
   	   			},
   			}]},{
@@ -229,7 +229,7 @@ function clearRefund(){
   	  					permission:'active',
   	  			}],
   	   			data:{
-        			name: result.user
+        			user: result.user
   	   			},
   			}]},{
   		blocksBehind: 3,
@@ -261,7 +261,7 @@ function rmCompany(){
   	  					permission:'active',
   	  			}],
   	   			data:{
-        			name: result.company
+        			company: result.company
   	   			},
   			}]},{
   		blocksBehind: 3,
@@ -293,7 +293,7 @@ function clearUser(){
   	  					permission:'active',
   	  			}],
   	   			data:{
-        			name: result.user
+        			user: result.user
   	   			},
   			}]},{
   		blocksBehind: 3,
