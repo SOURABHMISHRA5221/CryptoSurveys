@@ -4,6 +4,16 @@
     "types": [],
     "structs": [
         {
+            "name": "clearrefund",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "clearuser",
             "base": "",
             "fields": [
@@ -23,7 +33,7 @@
                 },
                 {
                     "name": "score",
-                    "type": "int32"
+                    "type": "int64"
                 },
                 {
                     "name": "stake",
@@ -31,7 +41,21 @@
                 },
                 {
                     "name": "company",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "refunddetail",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
                     "type": "name"
+                },
+                {
+                    "name": "balance",
+                    "type": "int64"
                 }
             ]
         },
@@ -80,6 +104,11 @@
     ],
     "actions": [
         {
+            "name": "clearrefund",
+            "type": "clearrefund",
+            "ricardian_contract": ""
+        },
+        {
             "name": "clearuser",
             "type": "clearuser",
             "ricardian_contract": ""
@@ -97,14 +126,21 @@
     ],
     "tables": [
         {
-            "name": "surveytable",
+            "name": "refund",
+            "type": "refunddetail",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "survey",
             "type": "surveydata",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "userdetail",
+            "name": "user",
             "type": "userdetail",
             "index_type": "i64",
             "key_names": [],

@@ -8,13 +8,12 @@ using namespace std;
 
 CONTRACT cryptosurvey : public contract{
 	public:
-        
         cryptosurvey(
            name reciver,
            name code,
            datastream<const char *> ds
          ):contract(reciver,code,ds),
-           myToken("TOK",4)
+           myToken("SUR",4)
            {}
 
         TABLE surveydata{
@@ -23,7 +22,7 @@ CONTRACT cryptosurvey : public contract{
             auto primary_key() const {return company.value;}
         };
 
-        typedef multi_index<name("surveytable"),surveydata> surveydatas;
+        typedef multi_index<name("survey"),surveydata> surveydatas;
 
         TABLE userdetail{
            name user;
@@ -32,14 +31,42 @@ CONTRACT cryptosurvey : public contract{
            auto primary_key() const {return user.value;}
         };
 
-        typedef multi_index<name("userdetail"),userdetail> userdetails;
+        typedef multi_index<name("user"),userdetail> userdetails;
+
+        TABLE refunddetail{
+           name user;
+           int64_t balance;
+           auto primary_key() const {return user.value;}
+        };
+
+        typedef multi_index<name("refund"),refunddetail> refunddetails;
          
         using contract::contract;
 
-        ACTION insertscore(name user,int score,asset stake,name company){
+        ON_TRANSFER
+        void transferaction(name storer,name reciver,asset stake,string data){
+          check( (data ==string("COMPANY") || data == string("USER") || data == string("REFUND")),"Enter correct information in memo");
+          check(stake.symbol == myToken,"Not our token");
+          if ( data == string("COMPANY")) {
+               addsurvey(reciver,stake.amount);
+          }
+          else if ( data == string("USER")){
+               addScore(reciver,0,stake.amount,name("cryptosurvey"));
+          }
+          else{
+              addToRefundTable(storer,stake.amount);
+          }
+        }
+
+        ACTION insertscore(name user,int64_t score,asset stake,string company){
            require_auth(name("cryptosurvey"));
            check(stake.symbol == myToken,"Not our token");
-           addScore(user,score,stake.amount,company);
+           addScore(user,score,stake.amount,name(company));
+        }
+
+        ACTION rmcompany(name company){
+           require_auth(name("cryptosurvey"));
+           delCompany(company);
         }
 
         ACTION clearuser(name user){
@@ -47,17 +74,11 @@ CONTRACT cryptosurvey : public contract{
            delUser(user);
         }
 
-        ON_TRANSFER
-        void addsurveydata(name storer,name reciver,asset stake,string data){
-          check(data==string("SURVEY"),"String should be SURVEY");
-          addsurvey(reciver,stake.amount);
+        ACTION clearrefund(name user){
+           require_auth(name("cryptosurvey"));
+           clearRefund(user);
         }
-
-        ACTION rmcompany(name company){
-          require_auth(company);
-          delCompany(company);
-        }
-                
+                        
    private:
       const symbol myToken;
 
@@ -89,6 +110,15 @@ CONTRACT cryptosurvey : public contract{
          userdetails _userdetails(get_self(),get_self().value);
          auto itr = _userdetails.find(user.value);
          check(itr != _userdetails.end(),"USER DOES'NT EXIST");
+         double balance  = itr->balance*0.998;
+         asset payoutasset(balance,myToken);
+         action payoutaction = action(
+            permission_level{get_self(),name("active")},
+            name("eosio.token"),
+            name("transfer"),
+            make_tuple(get_self(),user,payoutasset,string("THANKS FOR INVESTING"))
+         );
+         payoutaction.send();
          _userdetails.erase(itr);
       }
 
@@ -132,4 +162,26 @@ CONTRACT cryptosurvey : public contract{
 
       }
 
+      void addToRefundTable(name user,int64_t balance){
+          refunddetails _refunddetails(get_self(),get_self().value);
+          auto itr = _refunddetails.find(user.value);
+          if ( itr == _refunddetails.end()){
+              _refunddetails.emplace(get_self(),[&](auto& newUser){
+                  newUser.user = user;
+                  newUser.balance = balance;
+              });
+          }
+          else{
+             _refunddetails.modify(itr,get_self(),[&](auto& User){
+                   User.balance += balance;
+              });
+          }
+      }
+
+      void clearRefund(name user){
+          refunddetails _refunddetails(get_self(),get_self().value);
+          auto itr  = _refunddetails.find(user.value);
+          check(itr != _refunddetails.end(),"record DOES'NT exist");
+          _refunddetails.erase(itr);
+      }
 };

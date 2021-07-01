@@ -12,6 +12,7 @@ const api = new Api({rpc,signatureProvider,textDecoder:new TextDecoder(),textEnc
 const prompt = require('prompt');
 prompt.start();
 
+
 function insertscore(){
 	prompt.get(['participant','score','stake','company'], (err,result)=>{
 	if (err){return onErr(err);}
@@ -111,7 +112,7 @@ function insertSurveyCompany(){
         			from: 'cryptosurvey',
         			to:result.to,
         			quantity:result.stake,
-        			memo: 'SURVEY'
+        			memo: 'COMPANY'
   	   			},
   			}]},{
   		     blocksBehind: 3,
@@ -179,4 +180,166 @@ function createAccount(){
 	});
 }
 
-createAccount();
+function transfer(){
+	prompt.get(['to','stake','memo'], (err,result)=>{
+	if (err){return onErr(err);}
+    try{
+         (async () => {
+  			const resu = await api.transact({
+   				actions:[{
+  	  				account: 'eosio.token',
+  	  				name: 'transfer',
+  	  				authorization:[{
+  	  					actor:'cryptosurvey',
+  	  					permission:'active',
+  	  			}],
+  	   			data:{
+        			from: "cryptosurvey",
+        			to:result.to,
+        			stake:result.stake,
+        			memo: result.memo,
+  	   			},
+  			}]},{
+  		blocksBehind: 3,
+  		expireSeconds: 30,
+		});
+  		console.dir(resu);
+		})();
+	}catch(e){
+		console.log('Caught: \n'+e);
+		if ( e instanceof RpcError){
+			console.log(JSON.stringify(e.json,null,2));
+		}
+	}
+	
+});
+}
+
+function clearRefund(){
+	prompt.get(['user'], (err,result)=>{
+	if (err){return onErr(err);}
+    try{
+         (async () => {
+  			const resu = await api.transact({
+   				actions:[{
+  	  				account: 'cryptosurvey',
+  	  				name: 'clearrefund',
+  	  				authorization:[{
+  	  					actor:'cryptosurvey',
+  	  					permission:'active',
+  	  			}],
+  	   			data:{
+        			name: result.user
+  	   			},
+  			}]},{
+  		blocksBehind: 3,
+  		expireSeconds: 30,
+		});
+  		console.dir(resu);
+		})();
+	}catch(e){
+		console.log('Caught: \n'+e);
+		if ( e instanceof RpcError){
+			console.log(JSON.stringify(e.json,null,2));
+		}
+	}
+	
+});
+}
+
+function rmCompany(){
+	prompt.get(['company'], (err,result)=>{
+	if (err){return onErr(err);}
+    try{
+         (async () => {
+  			const resu = await api.transact({
+   				actions:[{
+  	  				account: 'cryptosurvey',
+  	  				name: 'rmcompany',
+  	  				authorization:[{
+  	  					actor:'cryptosurvey',
+  	  					permission:'active',
+  	  			}],
+  	   			data:{
+        			name: result.company
+  	   			},
+  			}]},{
+  		blocksBehind: 3,
+  		expireSeconds: 30,
+		});
+  		console.dir(resu);
+		})();
+	}catch(e){
+		console.log('Caught: \n'+e);
+		if ( e instanceof RpcError){
+			console.log(JSON.stringify(e.json,null,2));
+		}
+	}
+	
+});
+}
+
+function clearUser(){
+	prompt.get(['user'], (err,result)=>{
+	if (err){return onErr(err);}
+    try{
+         (async () => {
+  			const resu = await api.transact({
+   				actions:[{
+  	  				account: 'cryptosurvey',
+  	  				name: 'clearuser',
+  	  				authorization:[{
+  	  					actor:'cryptosurvey',
+  	  					permission:'active',
+  	  			}],
+  	   			data:{
+        			name: result.user
+  	   			},
+  			}]},{
+  		blocksBehind: 3,
+  		expireSeconds: 30,
+		});
+  		console.dir(resu);
+		})();
+	}catch(e){
+		console.log('Caught: \n'+e);
+		if ( e instanceof RpcError){
+			console.log(JSON.stringify(e.json,null,2));
+		}
+	}
+	
+});
+}
+
+prompt.get(['function_name'],(err,result)=>{
+	if ( result.function_name == "insertscore"){
+		insertscore();
+	}
+	else if ( result.function_name == "gettable"){
+		gettable();
+	}
+	else if ( result.function_name == "getaccount"){
+		getaccount();
+	}
+	else if ( result.function_name == "insertSurveyCompany"){
+		insertSurveyCompany();
+	}
+	else if ( result.function_name == "createaccount"){
+		createAccount();
+	}
+	else if ( result.function_name == "transfer"){
+		transfer();
+	}
+	else if ( result.function_name == "clearRefund"){
+		clearRefund();
+	}
+	else if ( result.function_name == "rmCompany"){
+		rmCompany();
+	}
+	else if ( result.function_name == "clearUser"){
+		clearUser();
+	}
+	else {
+		console.log("invalid function");
+	}
+})
