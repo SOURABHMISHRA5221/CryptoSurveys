@@ -205,7 +205,11 @@ function createAccount(){
    to: name of the account to get the token
    stake: token to transfer
    memo: 4 choices are available for this 
-     a) USER : if memo contains USER keyword then it will insert the account name 
+     a) USER : if memo contains USER keyword then it will insert the add a participant mentioned in to argument, to the usertbl of cryptosurvey contract, with 0 score
+               and balance equals the stake amount
+     b) Company : if memo contains COMPANY keyword then it will insert company name mentioned in to argument, to the surveytbl with balance equal to stake amount
+     c) REFUND  : if memo contains REFUND keyword then it will add the from account name to the refundtbl and makes its balance equal stake amount
+     d) REMOVED : if memo contains REMOVED keyword then will simply just transfer the stake amount to the account mentioned in to.
 */
 function transfer(){
 	prompt.get(['to','stake','memo'], (err,result)=>{
@@ -242,6 +246,7 @@ function transfer(){
 });
 }
 
+/* This function helps in clearing data of the user mentioned in user argument from the refund table */
 function clearRefund(){
 	prompt.get(['user'], (err,result)=>{
 	if (err){return onErr(err);}
@@ -274,6 +279,9 @@ function clearRefund(){
 });
 }
 
+/* This function helps in clear the data of company mentioned in company argument from the surveytbl
+   and at the same time transfers the amount of token left of that company to that account
+*/
 function rmCompany(){
 	prompt.get(['company'], (err,result)=>{
 	if (err){return onErr(err);}
@@ -306,6 +314,9 @@ function rmCompany(){
 });
 }
 
+/* This function helps in clear the data of user mentioned in user argument from the usertbl
+   and at the same time transfers the amount of token left of that user to his/her account
+*/
 function clearUser(){
 	prompt.get(['user'], (err,result)=>{
 	if (err){return onErr(err);}
