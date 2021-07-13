@@ -24,7 +24,7 @@ After completing the last step our cryptosurvey contract will get deployed in ou
 - Using the functionFile.js in JSFiles folder. <br /> <pre>
     Firstly install eosjs using: - 
     npm install eosjs 
-    Then open functionFile.js and change the defaul key written at line no. 6 <br /> with the private key of the cryptosurvey account </pre> <br />
+    Then open functionFile.js and change the default key written at line no. 6 <br /> with the private key of the cryptosurvey account </pre> <br />
    
   Completion of last step finishes all the setup and now one can push action in contract. <br /> All you need to do is just run functionFile.js and enter the name of the action 
   you want to push. <br /> To learn more about eosjs use this [link](https://github.com/EOSIO/eosjs/tree/master/docs/how-to-guides)
