@@ -16,4 +16,9 @@
 - Set cryptosurvey contract <br /> <pre>
        `cleos set contract cryptosurvey . -p cryptosurvey@active` </pre> <br />
 
+After completing the last step our cryptosurvey contract will get deployed in our local blockchain, Now to push function in our contract we can follow two ways <br />
+- Using normal cleos cli command <br /> <pre>
+    To get completely familiar with cleos it is recommanded to follow on of the smart contract course on [this](https://eos.io/training-certification/) site.</pre> <br />
+    
+
      
