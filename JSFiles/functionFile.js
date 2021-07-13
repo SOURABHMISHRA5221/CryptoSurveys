@@ -3,7 +3,7 @@ const {JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
 const fetch = require('node-fetch');
 const { TextEncoder, TextDecoder } = require('util');
 
-const defaultPrivateKey = "5KM2DtmsLdp5VcMTxyUakVGBhRo9Yqi3Tzk2sQwwxsCLNQerxun";
+const defaultPrivateKey = "5KM2DtmsLdp5VcMTxyUakVGBhRo9Yqi3Tzk2sQwwxsCLNQerxun"; // edit this key
 const signatureProvider = new JsSignatureProvider([defaultPrivateKey]);
 
 const rpc = new JsonRpc('http://127.0.0.1:8888',{fetch});
@@ -12,7 +12,12 @@ const api = new Api({rpc,signatureProvider,textDecoder:new TextDecoder(),textEnc
 const prompt = require('prompt');
 prompt.start();
 
-
+/*This function helps in inserting score for a participants 
+  argument required : 
+  participant : Name of the participant
+  score: The score to add (can be negative)
+  stake: The amount of token to add ( always greater than 0)
+  company: The name of the company whos survey was responded by the participant */
 function insertscore(){
 	prompt.get(['participant','score','stake','company'], (err,result)=>{
 	if (err){return onErr(err);}
@@ -50,7 +55,11 @@ function insertscore(){
 	
 }
 
-
+/*This function helps in getting table from any contract
+  arguments required: 
+  code : name of the contract where the code is located
+  scope: name of the contract/symbol/account under whose scope you want to see the table
+  table: name of the table */
 function gettable(){
 	prompt.get(['code','scope','table'],(err,result) => {
 	try{
@@ -77,6 +86,9 @@ function gettable(){
 	});
 }
 
+/* This function helps in getting the account information 
+   requires only one argument name of the person whose account details are required
+*/
 function getaccount(){
 	prompt.get(['name'],(err,result)=>{
 		try{
@@ -95,7 +107,11 @@ function getaccount(){
 	});
 }
 
-
+/* This function helps in inserting data for the survey company
+   arguments required:
+   to: name of the company
+   stake: amount of token bought by the company
+*/
 function insertSurveyCompany(){
 	prompt.get(['to','stake'],(err,result)=>{
 		try{
@@ -130,7 +146,10 @@ function insertSurveyCompany(){
 	});
 }
 
-
+/*This function helps in creating a new account
+  requires only one argument and that is the name by which you want to create account.
+  makesure that name is made up of only this characters : abcdefghijklmnopqrstuvwxyz12345
+  and is not longer than 12 letters */
 function createAccount(){
 	prompt.get( ['name'],(err,result)=>{
 		try{
@@ -180,6 +199,14 @@ function createAccount(){
 	});
 }
 
+/* !!!One of the most important function available in this file
+   Performs transfer action on behalf of cryptosurvey account
+   arguments required: 
+   to: name of the account to get the token
+   stake: token to transfer
+   memo: 4 choices are available for this 
+     a) USER : if memo contains USER keyword then it will insert the account name 
+*/
 function transfer(){
 	prompt.get(['to','stake','memo'], (err,result)=>{
 	if (err){return onErr(err);}
