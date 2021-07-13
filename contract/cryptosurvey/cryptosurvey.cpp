@@ -51,7 +51,7 @@ CONTRACT cryptosurvey : public contract{
                addsurvey(reciver,stake.amount);
           }
           else if ( data == string("USER")){
-               addScore(reciver,0,stake.amount,name("cryptosurvey"));
+               addNewUser(reciver,0,stake.amount);
           }
           else if ( data  == string("REFUND")){
               addToRefundTable(storer,stake.amount);
