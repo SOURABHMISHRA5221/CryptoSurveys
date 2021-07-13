@@ -15,7 +15,11 @@ CONTRACT cryptosurvey : public contract{
          ):contract(reciver,code,ds),
            myToken("SOM",4)
            {}
-
+        
+	/*This table stores details of all the active company
+	  keeps two attributes for a perticular data
+	  1) companys account name whose data is being stored
+	  2) amount of the token they own */
         TABLE surveydata{
             name company;
             int64_t balance;
@@ -23,7 +27,12 @@ CONTRACT cryptosurvey : public contract{
         };
 
         typedef multi_index<name("surveytbl"),surveydata> surveydatas;
-
+        
+	/*This table stores details of all the active participants
+	  keeps three attributes for a perticular data
+	  1) name of the account whose data is being stored
+	  2) amount of the token he owns
+	  3) his/her current credibility score*/
         TABLE userdetail{
            name user;
            int64_t balance;
@@ -32,7 +41,11 @@ CONTRACT cryptosurvey : public contract{
         };
 
         typedef multi_index<name("usertbl"),userdetail> userdetails;
-
+        
+	/*This table stores details of all the pending refund
+	  keeps two attributes for a perticular data
+	  1) name of the account whose data is being stored
+	  2) amount of the token he/she wants to get refunded */
         TABLE refunddetail{
            name user;
            int64_t balance;
@@ -42,7 +55,7 @@ CONTRACT cryptosurvey : public contract{
         typedef multi_index<name("refundtbl"),refunddetail> refunddetails;
          
         using contract::contract;
-
+        /*This function helps performing various action based on the memo provided*/
         ON_TRANSFER
         void transferaction(name storer,name reciver,asset stake,string data){
           check( (data ==string("COMPANY") || data == string("USER") || data == string("REFUND") || data == string("REMOVED")),"Enter correct information in memo");
@@ -60,23 +73,39 @@ CONTRACT cryptosurvey : public contract{
               print("THANKS FOR INVESTING");
           }
         }
-
+        
+	
+	/*This action helps in adding score of a user can only be called by active permission of cryptosurvey acccount
+	  arguments required:
+	  name user = name of user/participant
+	  int64_t score = score to add
+	  asset stake   = token to add
+	  string company = name of the company whose survey was responded by the participant
+	*/
         ACTION insertscore(name user,int64_t score,asset stake,string company){
            require_auth(name("cryptosurvey"));
            check(stake.symbol == myToken,"Not our token");
            addScore(user,score,stake.amount,name(company));
         }
-
+        
+	/* This function helps in clear the data of company mentioned in company argument from the surveytbl
+           and at the same time transfers the amount of token left of that company to that account. Can only be called by active permission of
+	   cryptosurvey account */
         ACTION rmcompany(name company){
            require_auth(name("cryptosurvey"));
            delCompany(company);
         }
-
+        
+	/* This function helps in clear the data of user mentioned in user argument from the usertbl
+           and at the same time transfers the amount of token left of that user to his/her account. Can only be called by active permission of
+	   cryptosurvey account */
         ACTION clearuser(name user){
            require_auth(name("cryptosurvey"));
            delUser(user);
         }
-
+        
+	/* This function helps in clearing data of the user mentioned in user argument from the refund table. Can only be called by active permission
+	   of cryptosurvey account*/
         ACTION clearrefund(name user){
            require_auth(name("cryptosurvey"));
            clearRefund(user);
