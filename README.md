@@ -19,7 +19,15 @@
 After completing the last step our cryptosurvey contract will get deployed in our local blockchain, Now to push function in our contract we can follow two ways <br />
 - Using normal cleos cli command <br /> <pre>
     To get completely familiar with cleos it is recommanded to follow one of the smart contract course on [this](https://eos.io/training-certification/) site.</pre> <br />
-- Using the functionFile.js in JSFiles folder. <br />
+- Using the functionFile.js in JSFiles folder. <br /> <pre>
+    Firstly install eosjs using: - 
+    npm install eosjs 
+    Then open functionFile.js and change the defaul key written at line no. 6 <br /> with the private key of the cryptosurvey account </pre> <br />
+   
+  Completion of last step finishes all the setup and now one can push action in contract. <br /> All you need to do is just run functionFile.js and enter the name of the action 
+  you want to push. <br /> To learn more about eosjs use this [link](https://github.com/EOSIO/eosjs/tree/master/docs/how-to-guides)
+    
+    
     
 
      
