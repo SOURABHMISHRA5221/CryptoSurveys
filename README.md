@@ -15,6 +15,8 @@
       `eosio-cpp --abigen cryptosurvey.cpp -o cryptosurvey.wasm` </pre> <br /> 
 - Set cryptosurvey contract <br /> <pre>
        `cleos set contract cryptosurvey . -p cryptosurvey@active` </pre> <br />
+- Give cryptosurvey account eosio.code permision. <br /> <pre> 
+       `cleos set account permission addressbook active --add-code`</pre> <br />
 
 After completing the last step our cryptosurvey contract will get deployed in our local blockchain, Now to push function in our contract we can follow two ways <br />
 - Using normal cleos cli command <br /> <pre>
