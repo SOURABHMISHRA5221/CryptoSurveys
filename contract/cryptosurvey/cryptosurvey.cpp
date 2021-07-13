@@ -13,7 +13,7 @@ CONTRACT cryptosurvey : public contract{
            name code,
            datastream<const char *> ds
          ):contract(reciver,code,ds),
-           myToken("SOM",4)
+           myToken("CST",4)
            {}
         
 	/*This table stores details of all the active company
